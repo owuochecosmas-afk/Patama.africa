@@ -1,5 +1,6 @@
 {
-  "name": "patama-africa",
+  "name": "patama-afric",
+  "compatibility_date": "2026-09-15",
   "assets": {
     "directory": "./out"
   }
