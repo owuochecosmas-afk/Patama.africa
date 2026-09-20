@@ -10,8 +10,29 @@ function ContactForm() {
     const map = { church: "PATAMA CMS for my church", skills: "Contributing my skills", partner: "Partnership or collaboration" };
     const [form, setForm] = useState({ name: "", email: "", church: "", phone: "", type: map[pre] || "", msg: "" });
     const [done, setDone] = useState(false);
+    const [loading, setLoading] = useState(false);
 
-    if (done) { return (<main className="max-w-2xl mx-auto px-6 py-20 text-center"><h2 className="text-2xl font-bold text-[#0A1931]">Thank you for getting in touch.</h2><p className="text-sm text-gray-600 mt-2">Your enquiry has been sent. We will respond using the contact details you provided.</p></main>) }
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        try {
+            const res = await fetch('/api/enquiry', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(form),
+            });
+            if (res.ok) {
+                setDone(true);
+            } else {
+                alert('Failed to send. Please email owuochecjaay@gmail.com directly.');
+            }
+        } catch (err) {
+            alert('Error: ' + err.message);
+        }
+        setLoading(false);
+    };
+
+    if (done) { return (<main className="max-w-2xl mx-auto px-6 py-20 text-center"><h2 className="text-2xl font-bold text-[#0A1931]">Thank you for getting in touch.</h2><p className="text-sm text-gray-600 mt-2">Your enquiry has been sent to owuochecjaay@gmail.com. We will respond using the contact details you provided.</p></main>) }
 
     return (
         <main>
@@ -24,7 +45,7 @@ function ContactForm() {
             <section className="max-w-4xl mx-auto px-6 py-10">
                 <h2 className="text-center font-bold text-xl text-[#0A1931]">How can we help?</h2>
                 <p className="text-center text-[11px] text-gray-500">Complete the form below to send us your enquiry.</p>
-                <form onSubmit={e => { e.preventDefault(); setDone(true); }} className="mt-8 space-y-6">
+                <form onSubmit={handleSubmit} className="mt-8 space-y-6">
                     <div className="grid md:grid-cols-2 gap-6">
                         <div><label className="text-[11px] font-bold">Your name<span className="text-gray-400 font-normal block">Required</span></label><input required value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} className="w-full border mt-1 p-2 rounded text-sm" /></div>
                         <div><label className="text-[11px] font-bold">Email address<span className="text-gray-400 font-normal block">Required</span></label><input required type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} className="w-full border mt-1 p-2 rounded text-sm" /></div>
@@ -39,7 +60,7 @@ function ContactForm() {
                         </div>
                     </div>
                     <div><label className="text-[11px] font-bold">Your message<span className="text-gray-400 font-normal block">Required</span></label><textarea required rows={5} value={form.msg} onChange={e => setForm({ ...form, msg: e.target.value })} className="w-full border mt-1 p-2 rounded text-sm"></textarea></div>
-                    <button className="w-full bg-[#C5A880] text-[#0A1931] py-2.5 rounded font-bold text-sm">Send Enquiry</button>
+                    <button disabled={loading} className="w-full bg-[#C5A880] text-[#0A1931] py-2.5 rounded font-bold text-sm disabled:opacity-50">{loading ? 'Sending...' : 'Send Enquiry'}</button>
                 </form>
             </section>
         </main>
