@@ -1,7 +1,5 @@
 {
-  "name": "patama-afric",
-  "compatibility_date": "2026-09-15",
-  "assets": {
-    "directory": "./out"
-  }
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "patama-africa",
+  "compatibility_date": "2025-01-01"
 }
