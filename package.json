@@ -10,10 +10,10 @@
     "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
   },
   "dependencies": {
-    "@emailjs/browser": "^4.4.1",
     "next": "14.2.5",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "resend": "^6.32.0"
   },
   "devDependencies": {
     "@opennextjs/cloudflare": "^1.6.2",

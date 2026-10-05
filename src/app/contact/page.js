@@ -1,7 +1,6 @@
 "use client";
 import { useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import emailjs from "@emailjs/browser";
 
 function NetworkBG() { return (<div className="absolute right-0 top-0 bottom-0 w-[45%] opacity-30 hidden md:block"><svg viewBox="0 0 300 200" className="w-full h-full"><circle cx="150" cy="50" r="3" fill="#C5A880" /><circle cx="250" cy="80" r="2" fill="#C5A880" /><circle cx="80" cy="120" r="2" fill="#C5A880" /><line x1="150" y1="50" x2="250" y2="80" stroke="#C5A880" strokeWidth="0.5" /></svg></div>) }
 
@@ -17,22 +16,16 @@ function ContactForm() {
         e.preventDefault();
         setLoading(true);
         try {
-            await emailjs.send(
-                process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID,
-                process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID,
-                {
-                    from_name: form.name,
-                    from_email: form.email,
-                    church: form.church,
-                    phone: form.phone,
-                    enquiry_type: form.type,
-                    message: form.msg,
-                },
-                process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY
-            );
+            const res = await fetch('/api/contact', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(form)
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Failed');
             setDone(true);
         } catch (err) {
-            alert('Failed to send. Please email office@patama.africa directly. Error: ' + err.text);
+            alert('Failed to send. Please email office@patama.africa directly. Error: ' + err.message);
         }
         setLoading(false);
     };
