@@ -2,34 +2,32 @@
 
 export async function POST(req) {
   try {
+    const body = await req.json();
     const apiKey = process.env.RESEND_API_KEY;
+
     if (!apiKey) {
-      return Response.json({ error: 'Missing RESEND_API_KEY' }, { status: 500 });
+      console.error("RESEND_API_KEY missing");
+      return Response.json({ error: 'RESEND_API_KEY missing in Cloudflare env' }, { status: 500 });
     }
+
     const resend = new Resend(apiKey);
 
-    const { name, email, church, phone, type, msg } = await req.json();
-
     const { data, error } = await resend.emails.send({
-      from: 'Patama Africa <onboarding@resend.dev>',
+      from: 'onboarding@resend.dev',
       to: 'owuochecjaay@gmail.com',
-      subject: `New ${type} enquiry from ${name}`,
-      replyTo: email,
-      html: `
-        <h2>New Enquiry - ${type}</h2>
-        <p><b>Name:</b> ${name}</p>
-        <p><b>Email:</b> ${email}</p>
-        <p><b>Church/Org:</b> ${church || '-'}</p>
-        <p><b>Phone:</b> ${phone || '-'}</p>
-        <p><b>Type:</b> ${type}</p>
-        <hr/>
-        <p>${msg}</p>
-      `,
+      subject: `New ${body.type} enquiry from ${body.name}`,
+      replyTo: body.email,
+      html: `<p><b>Name:</b> ${body.name}</p><p><b>Email:</b> ${body.email}</p><p>${body.msg}</p>`,
     });
 
-    if (error) return Response.json({ error: error.message }, { status: 400 });
-    return Response.json({ success: true, id: data?.id });
+    if (error) {
+      console.error("Resend error:", error);
+      return Response.json({ error: error.message || JSON.stringify(error) }, { status: 400 });
+    }
+
+    return Response.json({ success: true });
   } catch (e) {
+    console.error("Catch error:", e);
     return Response.json({ error: e.message }, { status: 500 });
   }
 }
